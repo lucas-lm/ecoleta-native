@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   View,
   StyleSheet,
@@ -8,12 +8,45 @@ import {
   SafeAreaView,
 } from 'react-native'
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import Constants from 'expo-constants'
+import api from '../../services/api'
 import { RectButton } from 'react-native-gesture-handler'
+
+interface Params {
+  pointId: number
+}
+
+interface Point {
+  image: string
+  name: string
+  city: string
+  uf: string
+  whatsapp: string
+  email: string
+  items: string[]
+}
 
 const Detail = () => {
   const { goBack } = useNavigation()
+  const route = useRoute()
+  const [point, setPoint] = useState<Point>({} as Point)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const params = route.params as Params
+
+  useEffect(() => {
+    const fetchPoint = async () => {
+      const { data } = await api.get(`/points/${params.pointId}`)
+      setPoint(data)
+      setIsLoading(false)
+    }
+    fetchPoint()
+  }, [])
+
+  if (isLoading) {
+    return null
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -30,11 +63,13 @@ const Detail = () => {
           }}
         />
 
-        <Text style={styles.pointName}>Colecionador de almas</Text>
-        <Text style={styles.pointItems}>Almas usadas</Text>
+        <Text style={styles.pointName}>{point.name}</Text>
+        <Text style={styles.pointItems}>{point.items.join(', ')}</Text>
         <View style={styles.address}>
           <Text style={styles.addressTitle}>Endereço</Text>
-          <Text style={styles.addressContent}>Morag</Text>
+          <Text style={styles.addressContent}>
+            {point.city}, {point.uf}
+          </Text>
         </View>
       </View>
 
