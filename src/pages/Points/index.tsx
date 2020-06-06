@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   View,
   Text,
@@ -7,15 +7,87 @@ import {
   ScrollView,
   Image,
   SafeAreaView,
+  Alert,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import * as Location from 'expo-location'
 import Constants from 'expo-constants'
 import { Feather as Icon } from '@expo/vector-icons'
 import MapView, { Marker } from 'react-native-maps'
 import { SvgUri } from 'react-native-svg'
+import api from '../../services/api'
+
+interface Item {
+  id: number
+  image: string
+  image_url: string
+  title: string
+}
+
+interface Point {
+  id: number
+  image: string
+  latitude: number
+  longitude: number
+  name: string
+}
 
 const Points = () => {
   const { goBack, navigate } = useNavigation()
+  const [items, setItems] = useState<Item[]>([])
+  const [selectedItems, setSelectedItems] = useState<number[]>([])
+  const [initialPosition, setInitialPosition] = useState<[number, number]>([
+    0,
+    0,
+  ])
+  const [points, setPoints] = useState<Point[]>([])
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const { data } = await api.get('/items')
+      setItems(data)
+    }
+    fetchItems()
+  }, [])
+
+  useEffect(() => {
+    const fetchPoints = async () => {
+      const { data } = await api.get('/points', {
+        params: {
+          city: 'Stark',
+          uf: 'House',
+          items: [1, 2],
+        },
+      })
+      setPoints(data)
+    }
+    fetchPoints()
+  }, [])
+
+  useEffect(() => {
+    const loadPosition = async () => {
+      const { status } = await Location.requestPermissionsAsync()
+      if (status !== 'granted') {
+        Alert.alert(
+          'Oooops...',
+          'Precisamos da sua permissão para obter a localização'
+        )
+        return
+      }
+      const {
+        coords: { latitude, longitude },
+      } = await Location.getCurrentPositionAsync()
+      setInitialPosition([latitude, longitude])
+    }
+    loadPosition()
+  }, [])
+
+  const handleSelectecItem = (id: number) => () => {
+    selectedItems.includes(id)
+      ? setSelectedItems([...selectedItems.filter((itemId) => itemId !== id)])
+      : setSelectedItems([...selectedItems, id])
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -29,32 +101,40 @@ const Points = () => {
         </Text>
 
         <View style={styles.mapContainer}>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: -27.12991,
-              longitude: -49.10122,
-              latitudeDelta: 0.014,
-              longitudeDelta: 0.014,
-            }}
-          >
-            <Marker
-              coordinate={{ latitude: -27.12991, longitude: -49.10122 }}
-              style={styles.mapMarker}
-              onPress={() => navigate('Detail')}
+          {initialPosition !== [0, 0] && (
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: initialPosition[0],
+                longitude: initialPosition[1],
+                latitudeDelta: 0.014,
+                longitudeDelta: 0.014,
+              }}
             >
-              <View style={styles.mapMarkerContainer}>
-                <Image
-                  style={styles.mapMarkerImage}
-                  source={{
-                    uri:
-                      'https://besthqwallpapers.com/Uploads/25-6-2019/97224/thumb2-little-cute-kitty-cute-animals-gray-fluffy-kitten-little-cat-kitten-with--toy.jpg',
+              {points.map((point) => (
+                <Marker
+                  key={String(point.id)}
+                  coordinate={{
+                    latitude: point.latitude,
+                    longitude: point.longitude,
                   }}
-                />
-                <Text style={styles.mapMarkerTitle}>Colecionador</Text>
-              </View>
-            </Marker>
-          </MapView>
+                  style={styles.mapMarker}
+                  onPress={() => navigate('Detail', { pointId: point.id })}
+                >
+                  <View style={styles.mapMarkerContainer}>
+                    <Image
+                      style={styles.mapMarkerImage}
+                      source={{
+                        uri:
+                          'https://besthqwallpapers.com/Uploads/25-6-2019/97224/thumb2-little-cute-kitty-cute-animals-gray-fluffy-kitten-little-cat-kitten-with--toy.jpg',
+                      }}
+                    />
+                    <Text style={styles.mapMarkerTitle}>{point.name}</Text>
+                  </View>
+                </Marker>
+              ))}
+            </MapView>
+          )}
         </View>
       </View>
 
@@ -64,38 +144,20 @@ const Points = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 20 }}
         >
-          <TouchableOpacity style={styles.item} onPress={() => {}}>
-            <SvgUri
-              width={42}
-              height={42}
-              uri="http://192.168.0.2:8080/static/lamps.svg"
-            />
-            <Text style={styles.itemTitle}>Lâmpadas</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.item} onPress={() => {}}>
-            <SvgUri
-              width={42}
-              height={42}
-              uri="http://192.168.0.2:8080/static/lamps.svg"
-            />
-            <Text style={styles.itemTitle}>Lâmpadas</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.item} onPress={() => {}}>
-            <SvgUri
-              width={42}
-              height={42}
-              uri="http://192.168.0.2:8080/static/lamps.svg"
-            />
-            <Text style={styles.itemTitle}>Lâmpadas</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.item} onPress={() => {}}>
-            <SvgUri
-              width={42}
-              height={42}
-              uri="http://192.168.0.2:8080/static/lamps.svg"
-            />
-            <Text style={styles.itemTitle}>Lâmpadas</Text>
-          </TouchableOpacity>
+          {items.map((item) => (
+            <TouchableOpacity
+              style={[
+                styles.item,
+                selectedItems.includes(item.id) && styles.selectedItem,
+              ]}
+              onPress={handleSelectecItem(item.id)}
+              key={String(item.id)}
+              activeOpacity={0.6}
+            >
+              <SvgUri width={42} height={42} uri={item.image_url} />
+              <Text style={styles.itemTitle}>{item.title}</Text>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
       </View>
     </SafeAreaView>
