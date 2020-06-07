@@ -41,6 +41,7 @@ const Points = () => {
     0,
   ])
   const [points, setPoints] = useState<Point[]>([])
+  const [positionIsLoading, setPositionIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -54,15 +55,15 @@ const Points = () => {
     const fetchPoints = async () => {
       const { data } = await api.get('/points', {
         params: {
-          city: 'Stark',
-          uf: 'House',
-          items: [1, 2],
+          city: 'Taquaritinga',
+          uf: 'SP',
+          items: selectedItems,
         },
       })
       setPoints(data)
     }
     fetchPoints()
-  }, [])
+  }, [selectedItems])
 
   useEffect(() => {
     const loadPosition = async () => {
@@ -78,6 +79,7 @@ const Points = () => {
         coords: { latitude, longitude },
       } = await Location.getCurrentPositionAsync()
       setInitialPosition([latitude, longitude])
+      setPositionIsLoading(false)
     }
     loadPosition()
   }, [])
@@ -101,7 +103,7 @@ const Points = () => {
         </Text>
 
         <View style={styles.mapContainer}>
-          {initialPosition !== [0, 0] && (
+          {!positionIsLoading && (
             <MapView
               style={styles.map}
               initialRegion={{
@@ -125,8 +127,7 @@ const Points = () => {
                     <Image
                       style={styles.mapMarkerImage}
                       source={{
-                        uri:
-                          'https://besthqwallpapers.com/Uploads/25-6-2019/97224/thumb2-little-cute-kitty-cute-animals-gray-fluffy-kitten-little-cat-kitten-with--toy.jpg',
+                        uri: point.image,
                       }}
                     />
                     <Text style={styles.mapMarkerTitle}>{point.name}</Text>
