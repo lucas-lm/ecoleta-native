@@ -34,7 +34,7 @@ const Home = () => {
               <Icon name="arrow-right" color="#FFF" size={24}></Icon>
             </Text>
           </View>
-          <Text style={styles.buttonText}>Entrar</Text>
+          <Text style={styles.buttonText}>Checar pontos de coleta</Text>
         </RectButton>
       </View>
     </ImageBackground>
