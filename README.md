@@ -42,18 +42,18 @@ O app está disponível para android na Play Store.
 
 ## Tecnologias utilizadas
 
-[NodeJS](https://nodejs.org/en/) - Interpretador de JavaScript assíncrono
-[TypeScript](https://www.typescriptlang.org/) - Um superset do javascript com tipagem estática que compila para javascript limpo
-[ReactJS](https://reactjs.org/) - Uma biblioteca declarativa e flexível para criação de interfaces do usuário
-[React Native](https://reactnative.dev/) - Framework para construção de aplicativos nativos com React
-[Expo](https://docs.expo.io/) - Plataforma para criação de aplicativos nativos com React
-[Axios](https://github.com/axios/axios) - Cliente HTTP baseado em Promises para o Browser e NodeJS
+- [NodeJS](https://nodejs.org/en/) - Interpretador de JavaScript assíncrono
+- [TypeScript](https://www.typescriptlang.org/) - Um superset do javascript com tipagem estática que compila para javascript limpo
+- [ReactJS](https://reactjs.org/) - Uma biblioteca declarativa e flexível para criação de interfaces do usuário
+- [React Native](https://reactnative.dev/) - Framework para construção de aplicativos nativos com React
+- [Expo](https://docs.expo.io/) - Plataforma para criação de aplicativos nativos com React
+- [Axios](https://github.com/axios/axios) - Cliente HTTP baseado em Promises para o Browser e NodeJS
 
 ## Veja também
 
-Web app em funcionamento: https://lucas-lm.github.io/ecoleta-web
-Repositório da API: https://github.com/lucas-lm/ecoleta-api
-Repositório do app web: https://github.com/lucas-lm/ecoleta-web
+- Web app em funcionamento: https://lucas-lm.github.io/ecoleta-web
+- Repositório da API: https://github.com/lucas-lm/ecoleta-api
+- Repositório do app web: https://github.com/lucas-lm/ecoleta-web
 
 ## Autor
 
