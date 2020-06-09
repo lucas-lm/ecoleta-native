@@ -85,3 +85,8 @@ O app está disponível para android na Play Store.
   - Você pode enviar mensagem via whatsapp para o ponto de coleta diretamente do app
 - Integração com aplicativo de email
   - Você pode enviar mensagem via e-mail para o ponto de coleta diretamente do app
+
+## Autor
+
+Feito com :heart: e :coffee: por
+[<img src="https://avatars3.githubusercontent.com/u/29049644?s=460&u=6fcf78abdf0e007afa9b2a31beaf686d79fa9173&v=4" width=115><br><sub>@lucas-lm</sub>](https://github.com/lucas-lm)
